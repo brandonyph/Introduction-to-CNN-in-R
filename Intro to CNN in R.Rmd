@@ -1,12 +1,24 @@
+---
+title: "CNN-tutorial"
+output:
+  md_document:
+    variant: gfm
+---
+
+```{r Code Chunk}
 library(tensorflow)
 library(keras)
 library(stringr)
 library(readr)
 library(purrr)
 library(caret)
+library(e1071)
 
-#cifar <- dataset_cifar10()
+cifar <- dataset_cifar10()
+```
 
+
+```{r Data Inspection}
 ############################################################################
 
 train_data <- scale(cifar$train$x)
@@ -21,6 +33,10 @@ dim(train_label) <- c(50000)
 test_label <- as.numeric(cifar$test$y)
 dim(test_label) <- c(10000)
 
+```
+
+
+```{r Data visualization}
 #######################################################################
 
 class_names <- c('airplane', 'automobile', 'bird', 'cat', 'deer',
@@ -36,6 +52,11 @@ cifar$train$x[index,,,] %>%
   purrr::map(as.raster, max = 255) %>%
   purrr::iwalk(~{plot(.x); title(.y)})
 
+
+```
+
+
+```{r Model building}
 ############################################################################
 
 model <- keras_model_sequential() %>% 
@@ -55,7 +76,10 @@ model %>%
   layer_dense(units = 10, activation = "softmax")
 
 summary(model)
+```
 
+
+```{r Model Optimization and Training}
 model %>% compile(
   optimizer = "adam",
   loss = "sparse_categorical_crossentropy",
@@ -65,16 +89,22 @@ model %>% compile(
 history <- model %>% 
   fit(
     x = train_data, y = train_label,
-    epochs = 50,
+    epochs = 100,
     validation_split=0.2,
     use_multiprocessing=TRUE
   )
 
+plot(history)
+
+```
+
+
+```{r}
 ############################################################################
 Prediction_train_data <- predict_classes(model, train_data)
 confusionMatrix(table(Prediction_train_data,train_label))
 
 Prediction_data_test <-predict_classes(model, test_data)
 confusionMatrix(table(Prediction_data_test,test_label))
-
+```
 
