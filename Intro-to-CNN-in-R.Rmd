@@ -5,7 +5,7 @@ output:
     variant: gfm
 ---
 
-```{r Code Chunk}
+```{r Import Libraries}
 library(tensorflow)
 library(keras)
 library(stringr)
@@ -19,7 +19,6 @@ cifar <- dataset_cifar10()
 
 
 ```{r Data Inspection}
-############################################################################
 
 train_data <- scale(cifar$train$x)
 dim(train_data) <- c(50000,32,32,3)
@@ -89,7 +88,7 @@ model %>% compile(
 history <- model %>% 
   fit(
     x = train_data, y = train_label,
-    epochs = 100,
+    epochs = 20,
     validation_split=0.2,
     use_multiprocessing=TRUE
   )
